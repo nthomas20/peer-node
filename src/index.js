@@ -3,6 +3,7 @@
 /**
  * Host, Peer, Node definitions
  * @author Nathaniel Thomas <nthomas20@gmail.com>
+ * @module peer-node
  */
 
 const crypto = require('crypto')
@@ -11,7 +12,18 @@ const net = require('net')
 const PromiseSocket = require('promise-socket')
 const EventEmitter = require('events')
 
+/**
+ * Host identifier. Supports IPV4 and IPV6 and contains family, address, and port
+ * @class
+ * @memberof module:peer-node
+ */
 class Host {
+  /**
+   * @constructor
+   * @param {String} address - IPV4 or IPv6 based address. "localhost" is translated to 127.0.0.1
+   * @param {Number} port - Port number on which to identify the host
+   * @returns {Object} Host Instance
+   */
   constructor (address, port = 5744) {
     // Accept a few shortcuts for local host
     if (address.includes(['localhost'])) {
@@ -31,18 +43,34 @@ class Host {
     this._port = port
   }
 
+  /**
+   * Get the host address
+   * @returns Address String
+   */
   get address () {
     return this._address
   }
 
+  /**
+   * Get the host port
+   * @returns Port Number
+   */
   get port () {
     return this._port
   }
 
+  /**
+   * Get the family type of address
+   * @returns IPVv or IPv6
+   */
   get family () {
     return this._family
   }
 
+  /**
+   * Get the object summary of this host instance
+   * @returns Object containing address, family, and port of the host
+   */
   get object () {
     return {
       address: this.address,
@@ -52,8 +80,21 @@ class Host {
   }
 }
 
+/**
+ * Peer Object can reach out and connect to a host Node and is used inside Host to identify connected Peers
+ * @class
+ * @memberof peer-node
+ */
 class Peer {
-  constructor (host, header = 0xA27CC1A2, bufferSize = 10485760) {
+  /**
+   * @constructor
+   * @param {Host} Host object identifying the connection
+   * @param {Number} [header=0xA27CC1A2] - 10 digit number identifying header of each message
+   * @param {Number} bufferSize - Size of the buffer used to process incoming messages
+   * @param {Number} [maxConnectionAttempts=10] - How many times the Peer should attempt to connect before giving up
+   * @returns Peer Instance
+   */
+  constructor (host, header = 0xA27CC1A2, bufferSize = 10485760, maxConnectionAttemps = 10) {
     this._host = host
     this._state = null
     this._header = header
@@ -63,6 +104,7 @@ class Peer {
     this._connectionAttempts = 0
     this._keypair = null
     this._remotePublicKey = null
+    this._maxConnectionAttempts = maxConnectionAttemps
 
     this._eventEmitter = new EventEmitter()
   }
@@ -141,7 +183,7 @@ class Peer {
       this.connect()
     }
 
-    if (this.state !== 'connecting' || this._connectionAttempts === 10) {
+    if (this.state !== 'connecting' || this._connectionAttempts >= this._maxConnectionAttemps) {
       this._eventEmitter.emit('error', { peer: this, err: err })
     }
   }
@@ -151,6 +193,11 @@ class Peer {
     this._eventEmitter.emit('close', { peer: this, err: err })
   }
 
+  /**
+   * Connect to the host peer. Fires the 'connect' event on success (of new connection only)
+   * @param {Socket} [socket=null] - Pass in an already connected socket or the default will make a fresh connection
+   * @returns {Socket} Socket reference stored in the Peer
+   */
   async connect (socket = null) {
     this._inBuffer = Buffer.alloc(this._bufferSize)
     this._inCursor = 0
@@ -177,22 +224,34 @@ class Peer {
     return this._socket
   }
 
+  /**
+   * Get the number of connection attempts made
+   */
   get connectionAttempts () {
     return this._connectionAttempts
   }
 
+  /**
+   * Disconnect from the Peer. Fires the 'close' event on success
+   */
   async disconnect () {
     this._state = 'disconnecting'
     await this._socket.end()
     this._socketEventClose()
   }
 
+  /**
+   * Destroy the Peer connection. Fires the 'close' event on success
+   */
   async destroy () {
     this._state = 'destroying'
     await this._socket.destroy()
     this._socketEventClose()
   }
 
+  /**
+   * Generate a key pair for this Peer communication. This must occur prior to connecting to the Peer
+   */
   generateKeypair () {
     if (this.state === null) {
       this._keypair = keypair()
@@ -201,16 +260,32 @@ class Peer {
     }
   }
 
+  /**
+   * Get this Peer's hash value
+   */
   get hash () {
     return this._hash
   }
 
+  /**
+   * Set the has value of this Peer
+   */
   set hash (hash) {
     this._hash = hash
   }
 
+  /**
+   * Get the key pair for this side of the Peer connection
+   */
   get keypair () {
     return this._keypair
+  }
+
+  /**
+   * Get the remote public key for this Peer connection
+   */
+  get remotePublicKey () {
+    return this._remotePublicKey
   }
 
   _processMessage (message) {
@@ -271,6 +346,12 @@ class Peer {
     this._eventEmitter.on(event, callback)
   }
 
+  /**
+   * Send a command and data packet to the connected Peer
+   * @param {String} command - Maximum 12 characters command string
+   * @param {String} [data=null] - Data string to send to the connected Peer
+   * @returns {Boolean} Success state of sending the data packet
+   */
   async send (command, data = null) {
     if (data === null) {
       data = Buffer.alloc(0)
@@ -317,12 +398,27 @@ class Peer {
     }
   }
 
+  /**
+   * Get the state of this Peer connection
+   */
   get state () {
     return this._state
   }
 }
 
+/**
+ * Peer Node Server. This is needed to allow other peers to connect into the system network
+ * @class
+ * @memberof module:peer-node
+ */
 class Node {
+  /**
+   * @constructor
+   * @param {Host} Host object identifying the connection (Only port is utilized)
+   * @param {Number} [header=0xA27CC1A2] - 10 digit number identifying header of each message
+   * @param {Number} bufferSize - Size of the buffer used to process incoming messages
+   * @returns Node Instance
+   */
   constructor (host, header = 0xA27CC1A2, bufferSize = 10485760) {
     this._host = host
     this._header = header
@@ -373,6 +469,11 @@ class Node {
     })
   }
 
+  /**
+   * Broadcast data packets to all connected peers
+   * @param {String} command - Maximum 12 character command string
+   * @param {String} data - String to broadcast
+   */
   broadcast (command, data) {
     if (Object.keys(this._peerList).length > 0) {
       for (let peerHash in this._peerList) {
@@ -381,10 +482,16 @@ class Node {
     }
   }
 
+  /**
+   * Get the keypair for this Node
+   */
   get keypair () {
     return this._keypair
   }
 
+  /**
+   * Start the Peer Node service and listen for incoming Peer connections. Fires 'nodeListening' event on success
+   */
   listen () {
     this._state = 'connecting'
     this._inBuffer = Buffer.alloc(this._bufferSize)
@@ -398,8 +505,6 @@ class Node {
         this._eventEmitter.emit('nodeListening')
       })
     }
-
-    return this._socket
   }
 
   /**
@@ -411,8 +516,11 @@ class Node {
     this._eventEmitter.on(event, callback)
   }
 
+  /**
+   * Get the Peer Node connection port
+   */
   get port () {
-    return this._port
+    return this._host._port
   }
 }
 
