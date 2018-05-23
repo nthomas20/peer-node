@@ -12,7 +12,8 @@
   "private": false,
   "_id": "peer-node@0.0.1",
   "dependencies": {
-    "keypair": "^1.0.1"
+    "keypair": "^1.0.1",
+    "promise-socket": "^3.1.1"
   },
   "devDependencies": {
     "assert": "^1.4.1",

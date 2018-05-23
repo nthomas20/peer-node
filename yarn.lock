@@ -137,6 +137,27 @@ path-is-absolute@^1.0.0:
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/path-is-absolute/-/path-is-absolute-1.0.1.tgz#174b9268735534ffbc7ace6bf53a5a9e1b5c5f5f"
 
+promise-duplex@^3.0.3:
+  version "3.0.3"
+  resolved "https://registry.yarnpkg.com/promise-duplex/-/promise-duplex-3.0.3.tgz#e2ae4e17dec005e3c82b96c3373049020bd627ea"
+  dependencies:
+    promise-readable "^3.1.5"
+    promise-writable "^3.1.2"
+
+promise-readable@^3.1.5:
+  version "3.1.5"
+  resolved "https://registry.yarnpkg.com/promise-readable/-/promise-readable-3.1.5.tgz#cbf2ae3de7336e3f7fbf24a63e21f5e79d173175"
+
+promise-socket@^3.1.1:
+  version "3.1.1"
+  resolved "https://registry.yarnpkg.com/promise-socket/-/promise-socket-3.1.1.tgz#12797b0152acce35a0a5a963c1fa24be41af3f8e"
+  dependencies:
+    promise-duplex "^3.0.3"
+
+promise-writable@^3.1.2:
+  version "3.1.2"
+  resolved "https://registry.yarnpkg.com/promise-writable/-/promise-writable-3.1.2.tgz#1375cd75a3112c376c5cc22b79e777a86a57c454"
+
 supports-color@5.4.0:
   version "5.4.0"
   resolved "https://registry.yarnpkg.com/supports-color/-/supports-color-5.4.0.tgz#1c6b337402c2137605efe19f10fec390f6faab54"
