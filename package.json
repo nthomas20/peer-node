@@ -1,0 +1,24 @@
+{
+  "name": "peer-node",
+  "version": "0.0.1",
+  "description": "Peer Node for constructing p2p networks. Supports RSA keypair encryption of data payload ",
+  "main": "./src/index.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/nthomas20/peer-node.git"
+  },
+  "author": "Nathaniel Thomas <nthomas20@gmail.com>",
+  "license": "GPL-3.0",
+  "private": false,
+  "_id": "peer-node@0.0.1",
+  "dependencies": {
+    "keypair": "^1.0.1"
+  },
+  "devDependencies": {
+    "assert": "^1.4.1",
+    "mocha": "^5.1.1"
+  },
+  "scripts": {
+    "test": "mocha ./test/tests"
+  }
+}
