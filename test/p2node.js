@@ -10,7 +10,7 @@ async function run () {
     console.log('Peer connected', data.peerHash)
   })
 
-  setTimeout(() => {
+  setInterval(() => {
     console.log('sending broadcast')
     Node.broadcast('NOM', 'I wish to allocate you 300 noms, everybody gets 300 noms!!!')
   }, 10000)
