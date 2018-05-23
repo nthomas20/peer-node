@@ -10,6 +10,9 @@
   "author": "Nathaniel Thomas <nthomas20@gmail.com>",
   "license": "GPL-3.0",
   "private": false,
+  "keywords": [
+    "p2p", "peer network", "peer", "networking", "distributed network", "network", "computer cluster"
+  ],
   "_id": "peer-node@0.0.1",
   "dependencies": {
     "keypair": "^1.0.1",
