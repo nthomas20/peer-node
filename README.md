@@ -9,26 +9,24 @@ If a Peer wishes to accept connections, it must run its own Peer Node Server. He
 'use strict'
 
 const p2p = require('peer-node')
-const {promisify} = require('util')
 
-async function run () {
-  let Node = new p2p.Node(new p2p.Host('localhost', 3000))
+let Host = new p2p.Host(`127.0.0.1`, 3000)
+let Node = new p2p.Node(Host)
 
-  Node.on('peerConnected', (data) => {
-    console.log(`Peer connected: hash = ${data.peerHash}`)
-  })
+Node.on(
+  `peerConnected`,
+  data => console.log(`Peer connected: hash = ${data.peerHash}`)
+)
 
-  setTimeout(() => {
-    console.log('sending broadcast')
-    Node.broadcast('HOWDY', 'I wish to bid you welcome! All are welcome here!')
-  }, 10000)
+setInterval(
+  () => {
+    console.log(`sending broadcast`)
+    Node.broadcast(`HOWDY`, `I wish to bid you welcome! All are welcome here!`)
+  },
+  10000
+)
 
-  await Node.listen()
-}
-
-let runAsync = promisify(run)
-
-runAsync()
+Node.listen()
 ```
 
 # Launch an outgoing Peer Connection
@@ -39,28 +37,21 @@ Remote systems can connect without hosting their own incoming server. If you lau
 'use strict'
 
 const p2p = require('peer-node')
-const {promisify} = require('util')
 
-async function run () {
-  let Peer = new p2p.Peer(new p2p.Host('127.0.0.1', 3000))
+let Host = new p2p.Host(`127.0.0.1`, 3000)
+let Peer = new p2p.Peer(Host)
 
-  // This will secure communications between nodes
-  Peer.generateKeypair()
+Peer.generateKeypair() // This will secure communications between nodes
 
-  Peer.on('connect', () => {
-    console.log('CONNECTED TO HOST! HUZZAH!!')
-  })
+Peer.on(
+  `connect`,
+  () => console.log(`Connected to the host! Huzzah!!`)
+)
 
-  Peer.on('message', (payload) => {
-    // Output the message payload that was broadcast
-    console.log(payload.data.toString())
-  })
+Peer.on(
+  `message`,
+  payload => console.log(payload.data.toString()) // Output the message payload that was broadcast
+)
 
-  await Peer.connect()
-}
-
-let runAsync = promisify(run)
-
-runAsync()
-
+Peer.connect()
 ```
