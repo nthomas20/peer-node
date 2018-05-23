@@ -1,6 +1,6 @@
 'use strict'
 
-const p2p = require('../src/Network/P2P')
+const p2p = require('../src/index')
 const {promisify} = require('util')
 
 async function run () {
