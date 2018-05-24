@@ -83,7 +83,7 @@ class Host {
 /**
  * Peer Object can reach out and connect to a host Node and is used inside Host to identify connected Peers
  * @class
- * @memberof peer-node
+ * @memberof module:peer-node
  */
 class Peer {
   /**
