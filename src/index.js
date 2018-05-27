@@ -433,38 +433,55 @@ class Node {
     this._eventEmitter = new EventEmitter()
   }
 
-  _peerConnection (socket) {
+  /**
+   * Connect this Host Node to a peer
+   * @param {Socket|Peer} socketOrPeer - Add connected peer either via direct socket or already connected Peer object
+   * @returns {Boolean} Success of connection
+   */
+  connectPeer (socketOrPeer) {
     // Here is the processing for when a connection is made in
-    let peerHash = crypto.createHash('md5').update((new Date() / 1).toString()).digest('hex')
+    let peer
+    let remoteHost
 
-    let remoteHost = socket.address()
+    if (socketOrPeer instanceof Peer) {
+      peer = socketOrPeer
+      remoteHost = peer._host.object
+    } else {
+      let socket = socketOrPeer
+      remoteHost = socket.address()
+      peer = new Peer(new Host(remoteHost.address, remoteHost.port))
+      peer._keypair = this._keypair
+      peer.connect(socket)
+    }
 
-    let peer = new Peer(new Host(remoteHost.address, remoteHost.port))
-    peer.hash = peerHash
-    peer._keypair = this._keypair
+    peer.hash = crypto.createHash('md5').update((new Date() / 1).toString()).digest('hex')
 
-    this._peerList[peerHash] = peer
-
-    peer.connect(socket)
+    this._peerList[peer.hash] = peer
 
     peer.on('message', (data) => {
       // Forward this peer's message on to the Node server itself and its listeners
-      this._eventEmitter('message', data)
+      this._eventEmitter.emit('message', data)
     })
 
     peer.on('end', () => {
       // Just delete the peer connection, it will reconnect if it wants to
-      delete this._peerList[peerHash]
+      delete this._peerList[peer.hash]
+      this._eventEmitter.emit('end', {
+        peer: peer
+      })
     })
 
     peer.on('error', () => {
       // Just delete the peer connection, it will reconnect if it wants to
-      delete this._peerList[peerHash]
+      delete this._peerList[peer.hash]
+      this._eventEmitter.emit('error', {
+        peer: peer
+      })
     })
 
     this._eventEmitter.emit('peerConnected', {
       peer: peer,
-      peerHash: peerHash,
+      peerHash: peer.hash,
       remoteHost: remoteHost
     })
   }
@@ -498,7 +515,7 @@ class Node {
     this._inCursor = 0
 
     if (this._server === null) {
-      this._server = net.createServer(this._peerConnection.bind(this))
+      this._server = net.createServer(this.connectPeer.bind(this))
 
       this._server.listen(this._host.port, () => {
         // Emit an event saying that the node is listening, #magic
