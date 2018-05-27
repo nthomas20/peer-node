@@ -1,6 +1,6 @@
 {
   "name": "peer-node",
-  "version": "0.0.5",
+  "version": "0.0.6",
   "description": "Peer Node for constructing p2p networks. Supports RSA keypair encryption of data payload ",
   "main": "./src/index.js",
   "repository": {
@@ -19,7 +19,7 @@
     "network",
     "computer cluster"
   ],
-  "_id": "peer-node@0.0.5",
+  "_id": "peer-node@0.0.6",
   "dependencies": {
     "keypair": "^1.0.1",
     "promise-socket": "^3.1.1"
