@@ -2,7 +2,7 @@
 
 const p2p = require('../src/index')
 
-// Switch around the local and remote hosts for second process connection
+// Increment the local and remote hosts so that there's only ever one local host per port per machine. the remote host can connect to any existing node host
 let LocalHost = new p2p.Host(`127.0.0.1`, 6000)
 let RemoteHost = new p2p.Host(`127.0.0.1`, 3000)
 let Node = new p2p.Node(LocalHost)
