@@ -13,7 +13,7 @@ async function run () {
   })
 
   Peer.on('message', (payload) => {
-    console.log(payload.data.toString())
+    console.log(payload.command, ':', payload.data.toString())
   })
 
   await Peer.connect()

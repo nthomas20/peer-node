@@ -364,33 +364,32 @@ class Peer {
       data = crypto.privateEncrypt(this.keypair.private, data)
     }
 
-    let out = Buffer.alloc(data.length + 24)
-    // Write out the message header
-    out.writeUInt32LE(this._header, 0)
+    // Allocate buffer length of data + command/checksum byte length
+    let outgoingBuffer = Buffer.alloc(data.length + 24)
+
+    // Write the message header to start this message
+    outgoingBuffer.writeUInt32LE(this._header, 0)
 
     // Loop through our command characters and write up to 12 of them
     for (let i = 0; i < 12; i++) {
-      let charCode = 0
-
+      // Add the command character
       if (i < command.length) {
-        charCode = command.charCodeAt(i)
+        outgoingBuffer.writeUInt8(command.charCodeAt(i), i + 4)
       }
-
-      out.writeUInt8(charCode, i + 4)
     }
 
     // Output the length of the data block
-    out.writeUInt32LE(data.length, 16)
+    outgoingBuffer.writeUInt32LE(data.length, 16)
 
     // Generate our checksum for this message
     let checksum = Buffer.from(this._calculateChecksum(command, data))
 
     // Copy our checksum and data into the outgoing buffer
-    checksum.copy(out, 20)
-    data.copy(out, 24)
+    checksum.copy(outgoingBuffer, 20)
+    data.copy(outgoingBuffer, 24)
 
     try {
-      await this._socket.write(out, null)
+      await this._socket.write(outgoingBuffer, null)
 
       return true
     } catch (err) {
