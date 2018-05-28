@@ -1,6 +1,35 @@
 # peer-node
 Peer Node for constructing p2p networks. Supports RSA keypair encryption of data payload
 
+# Install
+
+## Using yarn
+```bash
+yarn add peer-node
+```
+
+## Using npm
+```bash
+npm install peer-node
+```
+
+# Documentation
+
+Clone the master branch from github
+
+```bash
+git clone https://github.com/nthomas20/peer-node.git
+```
+
+Navigate to the repository directory and run the following (You may also replace `yarn` with `npm`):
+
+```bash
+yarn install; yarn jsdocs
+```
+
+Then simply open up a web browser and navigate to: `localhost:8080` to view the documentation
+
+
 # Launch a Peer Node
 
 If a Peer wishes to accept connections, it must run its own Peer Node Server. Here's a simple server that will accept incoming connections and every 10 seconds broadcast a message to all connected peers.
