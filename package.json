@@ -35,6 +35,6 @@
     "postinstall": "npm shrinkwrap --dev",
     "generate-jsdocs": "jsdoc --configure .jsdoc.json --verbose",
     "jsdocs": "http-server ./docs -s; echo Access via 127.0.0.1:8080",
-    "test": "standard src/* && mocha ./test/tests"
+    "test": "standard src/* && mocha ./test/tests --timeout 5000"
   }
 }

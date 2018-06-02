@@ -325,7 +325,11 @@ class Peer {
       } else {
         // Do we need to decrypt the payload?
         if (this._remotePublicKey !== null) {
-          payload = crypto.publicDecrypt(this._remotePublicKey, payload)
+          try {
+            payload = crypto.publicDecrypt(this._remotePublicKey, payload)
+          } catch (err) {
+            payload = payload.toString()
+          }
         }
 
         this._eventEmitter.emit('message', {

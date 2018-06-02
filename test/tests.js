@@ -1,4 +1,4 @@
-/* global describe before it after */
+/* global describe beforeEach it afterEach */
 
 'use strict'
 
@@ -48,24 +48,60 @@ describe(`Peer to Host Tests`, () => {
   let node
   let testHost = new peerNode.Host('localhost', 3000)
 
-  before(() => {
+  beforeEach(() => {
     node = new peerNode.Node(testHost)
 
     node.listen()
   })
 
-  it(`should connect successfully to the test Node`, (done) => {
+  it(`should generate keypair and connect successfully to the test Node`, (done) => {
     let peer = new peerNode.Peer(testHost)
 
-    peer.on('connect', () => {
-      peer.disconnect()
+    peer.generateKeypair()
+
+    peer.on('connect', async () => {
+      await peer.disconnect()
       done()
     })
 
     peer.connect()
   })
 
-  after(() => {
-    node.stop()
+  it(`should send a message to the test Node`, (done) => {
+    let peer = new peerNode.Peer(testHost)
+
+    peer.on('connect', async () => {
+      await peer.send('TEST', 'This is my test data!')
+    })
+
+    node.on('message', async (payload) => {
+      await peer.disconnect()
+      done()
+    })
+
+    peer.connect()
+  })
+
+  it(`should receive a message from the test Node`, (done) => {
+    let peer = new peerNode.Peer(testHost)
+
+    peer.generateKeypair()
+
+    peer.on('message', async (payload) => {
+      payload.data.should.equal('Here is your test message')
+      // console.log(data)
+      await peer.disconnect()
+      done()
+    })
+
+    peer.on('connect', async () => {
+      node.broadcast('TEST', 'Here is your test message')
+    })
+
+    peer.connect()
+  })
+
+  afterEach(async () => {
+    await node.stop()
   })
 })
