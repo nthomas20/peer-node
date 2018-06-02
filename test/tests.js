@@ -16,7 +16,7 @@ const chai = require('chai')
 
 chai.should()
 
-describe('Peer Node Tests', () => {
+describe('Host Tests', () => {
   it(`should identify IPv4 Host Address`, () => {
     let host = new peerNode.Host('10.1.1.1')
 
