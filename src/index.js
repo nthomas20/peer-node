@@ -505,6 +505,15 @@ class Node {
     return this._keypair
   }
 
+  async stop () {
+    if (this._server !== null) {
+      this._state = 'closing'
+      await this._server.close()
+      this._server = null
+      this._state = 'closed'
+    }
+  }
+
   /**
    * Start the Peer Node service and listen for incoming Peer connections. Fires 'nodeListening' event on success
    */

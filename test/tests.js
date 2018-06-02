@@ -1,4 +1,4 @@
-/* global describe it */
+/* global describe before it after */
 
 'use strict'
 
@@ -16,7 +16,7 @@ const chai = require('chai')
 
 chai.should()
 
-describe('Host Tests', () => {
+describe(`Host Tests`, () => {
   it(`should identify IPv4 Host Address`, () => {
     let host = new peerNode.Host('10.1.1.1')
 
@@ -40,5 +40,32 @@ describe('Host Tests', () => {
     } catch (e) {
       return true
     }
+  })
+})
+
+// https://stackoverflow.com/questions/15509231/unit-testing-node-js-and-websockets-socket-io
+describe(`Peer to Host Tests`, () => {
+  let node
+  let testHost = new peerNode.Host('localhost', 3000)
+
+  before(() => {
+    node = new peerNode.Node(testHost)
+
+    node.listen()
+  })
+
+  it(`should connect successfully to the test Node`, (done) => {
+    let peer = new peerNode.Peer(testHost)
+
+    peer.on('connect', () => {
+      peer.disconnect()
+      done()
+    })
+
+    peer.connect()
+  })
+
+  after(() => {
+    node.stop()
   })
 })
