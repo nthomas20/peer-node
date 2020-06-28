@@ -1,10 +1,10 @@
 'use strict'
 
 const p2p = require('../src/index')
-const {promisify} = require('util')
+const { promisify } = require('util')
 
 async function run () {
-  let Node = new p2p.Node(new p2p.Host('localhost', 3000))
+  const Node = new p2p.Node(new p2p.Host('localhost', 3000))
 
   Node.on('peerConnected', (data) => {
     console.log('Peer connected', data.peerHash)
@@ -18,6 +18,6 @@ async function run () {
   await Node.listen()
 }
 
-let runAsync = promisify(run)
+const runAsync = promisify(run)
 
 runAsync()

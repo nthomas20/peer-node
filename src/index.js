@@ -30,7 +30,7 @@ class Host {
       address = '127.0.0.1'
     }
 
-    let version = net.isIP(address)
+    const version = net.isIP(address)
 
     // Check family
     if (version === 0) {
@@ -124,7 +124,7 @@ class Peer {
   _socketEventData (data) {
     // Add data to incoming buffer
     if (data.length + this._inCursor > this._inBuffer.length) {
-      this._eventEmitter.emit('error', { peer: this, 'err': 'Peer exceeded max receiving buffer' })
+      this._eventEmitter.emit('error', { peer: this, err: 'Peer exceeded max receiving buffer' })
       this._inCursor = this._inBuffer.length + 1
       return
     }
@@ -142,9 +142,9 @@ class Peer {
     while (cursor < this._inCursor) {
       // Look for start of a message
       if (this._inBuffer.readUInt32LE(cursor) === this._header) {
-        let messageStart = cursor
+        const messageStart = cursor
         if (this._inCursor > messageStart + 16) {
-          let messageLength = this._inBuffer.readUInt32LE(messageStart + 16)
+          const messageLength = this._inBuffer.readUInt32LE(messageStart + 16)
 
           if (this._inCursor >= messageStart + messageLength + 24) {
             // Complete message, let's parse it
@@ -289,25 +289,25 @@ class Peer {
   }
 
   _processMessage (message) {
-    let messageLength = message.readUInt32LE(16)
+    const messageLength = message.readUInt32LE(16)
 
     // Get command
     let command = []
     for (let i = 0; i < 12; i++) {
-      let s = message[i + 4]
+      const s = message[i + 4]
       if (s > 0) {
         command.push(String.fromCharCode(s))
       }
     }
     command = command.join('')
 
-    let checksum = message.readUInt32BE(20)
+    const checksum = message.readUInt32BE(20)
     let payload
 
     if (messageLength > 0) {
       payload = Buffer.alloc(messageLength)
       message.copy(payload, 0, 24)
-      let checksumVerification = Buffer.from(this._calculateChecksum(command, payload))
+      const checksumVerification = Buffer.from(this._calculateChecksum(command, payload))
 
       // Check the checksum for verification
       if (checksum !== checksumVerification.readUInt32BE(0)) {
@@ -369,7 +369,7 @@ class Peer {
     }
 
     // Allocate buffer length of data + command/checksum byte length
-    let outgoingBuffer = Buffer.alloc(data.length + 24)
+    const outgoingBuffer = Buffer.alloc(data.length + 24)
 
     // Write the message header to start this message
     outgoingBuffer.writeUInt32LE(this._header, 0)
@@ -386,7 +386,7 @@ class Peer {
     outgoingBuffer.writeUInt32LE(data.length, 16)
 
     // Generate our checksum for this message
-    let checksum = Buffer.from(this._calculateChecksum(command, data))
+    const checksum = Buffer.from(this._calculateChecksum(command, data))
 
     // Copy our checksum and data into the outgoing buffer
     checksum.copy(outgoingBuffer, 20)
@@ -450,7 +450,7 @@ class Node {
       peer = socketOrPeer
       remoteHost = peer._host.object
     } else {
-      let socket = socketOrPeer
+      const socket = socketOrPeer
       remoteHost = socket.address()
       peer = new Peer(new Host(remoteHost.address, remoteHost.port))
       peer._keypair = this._keypair
@@ -496,7 +496,7 @@ class Node {
    */
   broadcast (command, data) {
     if (Object.keys(this._peerList).length > 0) {
-      for (let peerHash in this._peerList) {
+      for (const peerHash in this._peerList) {
         this._peerList[peerHash].send(command, data)
       }
     }

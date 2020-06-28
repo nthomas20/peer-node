@@ -1,10 +1,10 @@
 'use strict'
 
 const p2p = require('../src/index')
-const {promisify} = require('util')
+const { promisify } = require('util')
 
 async function run () {
-  let Peer = new p2p.Peer(new p2p.Host('127.0.0.1', 3000))
+  const Peer = new p2p.Peer(new p2p.Host('127.0.0.1', 3000))
 
   Peer.generateKeypair()
 
@@ -19,6 +19,6 @@ async function run () {
   await Peer.connect()
 }
 
-let runAsync = promisify(run)
+const runAsync = promisify(run)
 
 runAsync()

@@ -3,20 +3,20 @@
 const p2p = require('../src/index')
 
 // Increment the local and remote hosts so that there's only ever one local host per port per machine. the remote host can connect to any existing node host
-let LocalHost = new p2p.Host(`127.0.0.1`, 6000)
-let RemoteHost = new p2p.Host(`127.0.0.1`, 3000)
-let Node = new p2p.Node(LocalHost)
-let Peer = new p2p.Peer(RemoteHost)
+const LocalHost = new p2p.Host('127.0.0.1', 6000)
+const RemoteHost = new p2p.Host('127.0.0.1', 3000)
+const Node = new p2p.Node(LocalHost)
+const Peer = new p2p.Peer(RemoteHost)
 
 Node.on(
-  `peerConnected`,
+  'peerConnected',
   data => {
     console.log(`Peer connected: hash = ${data.peerHash}, ${data.remoteHost.port}`)
   }
 )
 
 Node.on(
-  `nodeListening`,
+  'nodeListening',
   data => {
     Node.connectPeer(Peer)
   }
@@ -25,12 +25,12 @@ Node.on(
 Peer.generateKeypair() // This will secure communications between nodes
 
 Peer.on(
-  `connect`,
-  () => console.log(`Connected to the host! Huzzah!!`)
+  'connect',
+  () => console.log('Connected to the host! Huzzah!!')
 )
 
 Peer.on(
-  `message`,
+  'message',
   payload => {
     console.log(payload.data.toString())
 

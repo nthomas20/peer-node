@@ -16,25 +16,25 @@ const chai = require('chai')
 
 chai.should()
 
-describe(`Host Tests`, () => {
-  it(`should identify IPv4 Host Address`, () => {
-    let host = new peerNode.Host('10.1.1.1')
+describe('Host Tests', () => {
+  it('should identify IPv4 Host Address', () => {
+    const host = new peerNode.Host('10.1.1.1')
 
     host.family.should.equal('IPv4')
   })
-  it(`should identify special 'localhost' Address`, () => {
-    let host = new peerNode.Host('localhost')
+  it('should identify special \'localhost\' Address', () => {
+    const host = new peerNode.Host('localhost')
 
     host.family.should.equal('IPv4')
   })
-  it(`should identify Full IPv6 Host Address`, () => {
-    let host = new peerNode.Host('2607:f0d0:1002:0051:0000:0000:0000:0004')
+  it('should identify Full IPv6 Host Address', () => {
+    const host = new peerNode.Host('2607:f0d0:1002:0051:0000:0000:0000:0004')
 
     host.family.should.equal('IPv6')
   })
-  it(`should throw error for Invalid Host Address`, () => {
+  it('should throw error for Invalid Host Address', () => {
     try {
-      let host = new peerNode.Host('hoobleedooble')
+      const host = new peerNode.Host('hoobleedooble')
 
       host.family.should.equal('unknown')
     } catch (e) {
@@ -44,9 +44,9 @@ describe(`Host Tests`, () => {
 })
 
 // https://stackoverflow.com/questions/15509231/unit-testing-node-js-and-websockets-socket-io
-describe(`Peer to Host Tests`, () => {
+describe('Peer to Host Tests', () => {
   let node
-  let testHost = new peerNode.Host('localhost', 3000)
+  const testHost = new peerNode.Host('localhost', 3000)
 
   beforeEach(() => {
     node = new peerNode.Node(testHost)
@@ -54,8 +54,8 @@ describe(`Peer to Host Tests`, () => {
     node.listen()
   })
 
-  it(`should generate keypair and connect successfully to the test Node`, (done) => {
-    let peer = new peerNode.Peer(testHost)
+  it('should generate keypair and connect successfully to the test Node', (done) => {
+    const peer = new peerNode.Peer(testHost)
 
     peer.generateKeypair()
 
@@ -67,8 +67,8 @@ describe(`Peer to Host Tests`, () => {
     peer.connect()
   })
 
-  it(`should send a message to the test Node`, (done) => {
-    let peer = new peerNode.Peer(testHost)
+  it('should send a message to the test Node', (done) => {
+    const peer = new peerNode.Peer(testHost)
 
     peer.on('connect', async () => {
       await peer.send('TEST', 'This is my test data!')
@@ -82,8 +82,8 @@ describe(`Peer to Host Tests`, () => {
     peer.connect()
   })
 
-  it(`should receive a message from the test Node`, (done) => {
-    let peer = new peerNode.Peer(testHost)
+  it('should receive a message from the test Node', (done) => {
+    const peer = new peerNode.Peer(testHost)
 
     peer.generateKeypair()
 
