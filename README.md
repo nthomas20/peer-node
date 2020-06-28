@@ -1,8 +1,13 @@
 # peer-node
 Peer Node for constructing p2p networks. Supports RSA keypair encryption of data payload
 
+**I make no warrants that there are no security issues in this package, this project was purely for experimentation and personal enjoyment. Please feel free to audit, identify improvements, etc.**
+
 # Install
 
+*Please excuse the mess while I work to improve upon the automated package installation*
+
+<!--
 ## Using yarn
 ```bash
 yarn add peer-node
@@ -12,6 +17,7 @@ yarn add peer-node
 ```bash
 npm install peer-node
 ```
+-->
 
 # Documentation
 
