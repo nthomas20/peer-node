@@ -4,7 +4,7 @@
 
 /**
  * Testing for the Peer Node Network
- * @author Nathaniel Thomas <nthomas20@gmail.com>
+ * @author Nathaniel Thomas
  */
 
 // console.log('Run p2node.js in one terminal')
