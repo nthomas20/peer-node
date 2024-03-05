@@ -2,7 +2,7 @@
 
 /**
  * Host, Peer, Node definitions
- * @author Nathaniel Thomas <nthomas20@gmail.com>
+ * @author Nathaniel Thomas
  * @module peer-node
  */
 
